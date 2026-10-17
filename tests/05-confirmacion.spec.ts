@@ -28,11 +28,26 @@ test.describe('US-16 · Que mis datos no queden a la vista de otra persona', () 
 
 test.describe('US-17 · Confirmar mi pedido', () => {
   test('CA-01: con datos válidos veo "¡Pedido confirmado!" y un número de pedido', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+
+    await tienda.comprar('Esfero azul');
+
+    await expect(page.getByRole('heading', { name: '¡Pedido confirmado!' })).toBeVisible();
+    await expect(page.getByText(/Número de pedido:/)).toContainText(/#\d+/);
   });
 
   test('CA-02: un segundo pedido (sin recargar) tiene otro número', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.comprar('Esfero azul');
+    const primero = await tienda.numeroDePedido();
+
+    await tienda.volverALaTienda();
+    await tienda.comprar('Esfero azul');
+    const segundo = await tienda.numeroDePedido();
+
+    expect(segundo).not.toBe(primero);
   });
 
   test('CA-03: un pedido hecho después de recargar la página no repite un número anterior', async ({ page }) => {
@@ -52,6 +67,13 @@ test.describe('US-17 · Confirmar mi pedido', () => {
 
 test.describe('US-19 · Empezar una compra nueva con el carrito limpio', () => {
   test('CA-01: tras confirmar, el carrito está vacío y el contador marca 0', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-  });
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.comprar('Esfero azul');
+
+    await tienda.volverALaTienda();
+
+    await expect(tienda.carrito.getByText('Tu carrito está vacío.')).toBeVisible();
+    await expect(tienda.contador()).toContainText('0 artículo(s)');
+  });;
 });

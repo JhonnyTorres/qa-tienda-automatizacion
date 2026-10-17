@@ -17,32 +17,48 @@ const TOTAL_ESPERADO = PRECIO_MOCHILA - DESCUENTO_10 + IVA_ESPERADO; // 69.615
 
 test.describe('US-09 · Aplicar un código de descuento', () => {
   test('CA-01: DESC10 descuenta el 10% del subtotal', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 1.
-    // Agreguen 1 mochila, escriban DESC10 en "Código de descuento", presionen "Aplicar" y comprueben la fila
-    // "Descuento" del carrito: debe mostrar $ 6.500.
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.agregar('Mochila escolar');
+    await tienda.aplicarCodigo('DESC10');
+    await expect(tienda.total('Descuento')).toContainText(formatoCOP(DESCUENTO_10)); // debe mostrar $ 6.500
   });
 
-  test('CA-03: los códigos "desc10" y "Desc10" se reconocen igual que DESC10', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 2 · CAZABUGS · PRUEBAS DIRIGIDAS POR DATOS.
-    // No escriban tres pruebas casi iguales. Definan una lista de variantes
-    //   const VARIANTES = ['desc10', 'Desc10', ' DESC10 '];
-    // y generen UNA prueba por variante con un  for (const codigo of VARIANTES) { test(`...${codigo}...`, ...) }
-    // Así el reporte dice EXACTAMENTE qué variantes fallan.
-  });
+  const VARIANTES = [
+    { codigo: 'desc10', bug: 'PRJ-XX' },
+    { codigo: 'Desc10', bug: 'PRJ-XX' },
+    { codigo: ' DESC10 ', bug: '' },
+  ];
+
+  for (const { codigo, bug } of VARIANTES) {
+    test(`CA-03: el código "${codigo}" se reconoce igual que DESC10`, async ({ page }) => {
+      test.fail(bug !== '', `${bug} · el código de descuento distingue mayúsculas de minúsculas`);
+      const tienda = new TiendaPage(page);
+      await tienda.abrir();
+      await tienda.agregar('Mochila escolar');
+
+      await tienda.aplicarCodigo(codigo);
+
+      await expect(tienda.total('Descuento')).toContainText(formatoCOP(DESCUENTO_10)); // $ 6.500
+    });
+  }
 });
 
 test.describe('US-10 · Recibir aviso si el código no es válido', () => {
   test('CA-01: un código inexistente muestra el aviso y el total no cambia', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 1.
-    // Con 1 mochila ($ 77.350 de total), apliquen ABC123: el mensaje debe ser exactamente
-    // "Código de descuento no válido." y el total debe seguir en $ 77.350.
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.agregar('Mochila escolar');
+    await expect(tienda.total('Total')).toHaveText('$ 77.350'); // precondición: 65.000 + IVA 19%
+
+    await tienda.aplicarCodigo('ABC123');
+
+    await expect(tienda.mensajeDescuento()).toHaveText('Código de descuento no válido.');
+    await expect(tienda.total('Total')).toHaveText('$ 77.350'); // el total no cambia
   });
 
   test('CA-02: un código inválido NO borra un descuento válido ya aplicado', async ({ page }) => {
-    //test.fail(true, 'PRJ-XX · un código inválido borra el descuento válido ya aplicado');
+    test.fail(true, 'PRJ-XX · un código inválido borra el descuento válido ya aplicado');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar');
@@ -71,7 +87,7 @@ test.describe('US-11 · Ver el IVA correcto', () => {
 
 test.describe('US-12 · Ver el total a pagar correcto', () => {
   test('CA-02: con descuento, el total es subtotal − descuento + IVA (IVA sobre lo descontado)', async ({ page }) => {
-    //test.fail(true, 'PRJ-XX · el total arrastra el IVA mal calculado (RF-07/RF-08); misma causa que US-11 CA-02');
+    test.fail(true, 'PRJ-XX · el total arrastra el IVA mal calculado (RF-07/RF-08); misma causa que US-11 CA-02');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar');

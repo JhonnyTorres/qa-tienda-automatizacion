@@ -28,7 +28,7 @@ test.describe('US-13 · Ir a pagar desde el carrito', () => {
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar', 1);
-    await tienda.disminuir('Mochila escolar'); // lleva la cantidad a 0 (bug de US-06 CA-02) → total $ 0
+    await tienda.disminuir('Mochila escolar');
 
     await expect(tienda.botonPagar).toBeDisabled();
   });
@@ -36,15 +36,32 @@ test.describe('US-13 · Ir a pagar desde el carrito', () => {
 
 test.describe('US-14 · Completar mis datos de envío', () => {
   test('CA-01: con el formulario vacío hay un error por cada campo obligatorio', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 1.
-    // Agreguen un producto, "Ir a pagar", presionen "Confirmar pedido" sin llenar nada y comprueben los tres mensajes:
-    // "El nombre es obligatorio." · "El correo es obligatorio." · "La dirección es obligatoria."
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.agregar('Esfero azul');
+    await tienda.irAPagar();
+
+    await tienda.confirmar();
+
+    await expect(page.getByText('El nombre es obligatorio')).toBeVisible();
+    await expect(page.getByText('El correo es obligatorio.')).toBeVisible();
+    await expect(page.getByText('La dirección es obligatoria.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: '¡Pedido confirmado!' })).toHaveCount(0);
   });
 
   test('CA-02: un nombre y una dirección de solo espacios se rechazan como vacíos', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 2. Llenen nombre y dirección con "   " (tres espacios) y un correo válido.
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.agregar('Esfero azul');
+    await tienda.irAPagar();
+
+    await tienda.llenarDatos({ nombre: '   ', correo: 'ana@correo.com', direccion: '   ' });
+    await tienda.confirmar();
+
+    await expect(page.getByText('El nombre es obligatorio.')).toBeVisible();
+    await expect(page.getByText('La dirección es obligatoria.')).toBeVisible();
+    await expect(page.getByText('El correo es obligatorio.')).toHaveCount(0); // el correo sí era válido
+    await expect(page.getByRole('heading', { name: '¡Pedido confirmado!' })).toHaveCount(0);
   });
 });
 

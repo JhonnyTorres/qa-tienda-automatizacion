@@ -14,7 +14,7 @@ import { TiendaPage } from '../pages/TiendaPage';
 
 test.describe('US-04 · Agregar productos sin superar el stock', () => {
   // ─────────────── EJEMPLO GUIADO (resuelto) ───────────────
-  test('CA1: se pueden agregar 15 cuadernos (stock 15)', async ({ page }) => {
+  test('CA-01: se pueden agregar 15 cuadernos (stock 15)', async ({ page }) => {
     // ARRANGE: abrir la tienda
     await page.goto('/');
 
@@ -53,7 +53,7 @@ test.describe('US-04 · Agregar productos sin superar el stock', () => {
   });
 
   test('CA-03: 4 + 4 mochilas supera el stock (6) y debe rechazarse', async ({ page }) => {
-    //test.fail(true, 'PRJ-XX · el stock solo se valida por cada clic, no contra lo que ya hay en el carrito');
+    test.fail(true, 'PRJ-XX · el stock solo se valida por cada clic, no contra lo que ya hay en el carrito');
     // Este test se deja con localizadores directos (sin Page Object) para poder comparar "antes" y "después".
     await page.goto('/');
     // La tienda avisa con un alert(): se registra el manejador ANTES de la acción que lo provoca.
@@ -96,7 +96,7 @@ test.describe('US-04 · Agregar productos sin superar el stock', () => {
 
 test.describe('US-05 · Aumentar la cantidad desde el carrito', () => {
   test('CA-02: "+" no pasa del stock (6 mochilas)', async ({ page }) => {
-    //test.fail(true, 'PRJ-XX · el botón "+" del carrito no valida el stock');
+    test.fail(true, 'PRJ-XX · el botón "+" del carrito no valida el stock');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar', 6); // todo el stock
@@ -110,7 +110,7 @@ test.describe('US-05 · Aumentar la cantidad desde el carrito', () => {
 
 test.describe('US-06 · Disminuir la cantidad desde el carrito', () => {
   test('CA-02 (elegimos: se queda en 1): con cantidad 1, "−" no la deja en 0 ni en negativo', async ({ page }) => {
-    //test.fail(true, 'PRJ-XX · el botón "−" baja la cantidad a 0 (y más) en vez de respetar el mínimo de 1');
+    test.fail(true, 'PRJ-XX · el botón "−" baja la cantidad a 0 (y más) en vez de respetar el mínimo de 1');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar', 1);
