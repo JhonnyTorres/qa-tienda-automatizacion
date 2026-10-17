@@ -1,27 +1,28 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * PRUEBAS HEREDADAS (Parte 4).
+ * PRUEBAS HEREDADAS (Parte 4b) · diagnóstico y estado final de cada una.
  *
- * Las dejó otro equipo, y nadie sabe por qué fallan: están en CUARENTENA (test.fixme), que es lo que hacen los
- * equipos reales con pruebas rojas que no entienden, para no frenar a los demás.
+ * H1 → defecto de la PRUEBA (dato desactualizado).
+ * H2 → bug del PRODUCTO (el mismo del IVA de US-11 CA-02).
+ * H3 → prueba INESTABLE (condición de carrera con la carga de la página).
  *
- * Su trabajo, una por una:
- *   1. Saquen la prueba de cuarentena (borren su línea test.fixme) y ejecútenla.
- *   2. Diagnostiquen QUÉ falla: ¿el PRODUCTO (bug), la PRUEBA (defecto de la prueba), la INESTABILIDAD o el ENTORNO?
- *      Para detectar inestabilidad ejecútenla muchas veces:  npx playwright test heredados -g H3 --repeat-each=10
- *   3. Dejen cada una en su estado correcto y anoten el veredicto en ENTREGA.md.
- * No las "arreglen" a ciegas: un rojo no siempre es un bug.
+ * Ojo: estos veredictos hay que COMPROBARLOS con sus propias ejecuciones (ver GUIA) y anotar la evidencia en ENTREGA.md.
  */
 
-test('H1 · el catálogo tiene 6 productos', async ({ page }) => {
-  test.fixme(true, 'En cuarentena: nadie sabe por qué falla'); // ← borren esta línea para ejecutarla
+// H1 · VEREDICTO: defecto de la prueba. El requisito RF-01 dice "AL MENOS 6 productos" y el catálogo tiene 8.
+//      La prueba esperaba exactamente 6: dato viejo. Se corrige la prueba (no hay nada que reportar en Jira).
+test('H1 · el catálogo tiene 8 productos (cumple RF-01: al menos 6)', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 3 })).toHaveCount(6);
+  const productos = page.getByRole('heading', { level: 3 });
+  await expect(productos).toHaveCount(8);
 });
 
+// H2 · VEREDICTO: bug del producto. La prueba afirma lo que dice el requisito (RF-07: IVA sobre el valor ya descontado):
+//      (130.000 − 26.000) × 19% = $ 19.760. La tienda muestra $ 24.700 (19% del subtotal sin descontar).
+//      Se deja SIN cambios y como fallo esperado, con la clave de Jira (es el mismo bug que US-11 CA-02 y US-12 CA-02).
 test('H2 · el IVA de 2 mochilas con DESC20 es $ 19.760', async ({ page }) => {
-  test.fixme(true, 'En cuarentena: nadie sabe por qué falla'); // ← borren esta línea para ejecutarla
+  test.fail(true, 'PRJ-XX · el IVA se calcula sobre el subtotal completo, no sobre el valor descontado (RF-07)');
   await page.goto('/');
   const tarjeta = page
     .locator('.rounded-lg')
@@ -33,9 +34,14 @@ test('H2 · el IVA de 2 mochilas con DESC20 es $ 19.760', async ({ page }) => {
   await expect(page.locator('dt:text-is("IVA (19%)") + dd')).toHaveText('$ 19.760');
 });
 
+// H3 · VEREDICTO: prueba inestable. Con waitUntil:'domcontentloaded' el clic puede llegar ANTES de que React
+//      "hidrate" la página (cuando los botones todavía no tienen su manejador): el clic se pierde y no pasa nada.
+//      Nada en el producto está mal: la prueba no espera la condición correcta.
+//      Arreglo: no esperar un TIEMPO (waitForTimeout), esperar la CONDICIÓN. Se usa la espera por defecto de goto
+//      (evento "load": ya se descargaron y ejecutaron los scripts de la página).
+//      Comprobación: npx playwright test heredados -g H3 --repeat-each=30   (antes del arreglo salían rojos mezclados).
 test('H3 · agregar un cuaderno justo después de cargar', async ({ page }) => {
-  test.fixme(true, 'En cuarentena: nadie sabe por qué falla'); // ← borren esta línea para ejecutarla
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/'); // espera el evento "load" (antes: { waitUntil: 'domcontentloaded' })
   await page.getByRole('button', { name: 'Agregar' }).first().click();
   await expect(page.getByRole('listitem').filter({ hasText: 'Cuaderno universitario' })).toBeVisible();
 });

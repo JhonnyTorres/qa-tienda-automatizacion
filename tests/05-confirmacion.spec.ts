@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { TiendaPage } from '../pages/TiendaPage';
 
 /**
  * BLOQUE CONFIRMACIÓN · US-16 a US-19.
@@ -10,39 +11,47 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('US-16 · Que mis datos no queden a la vista de otra persona', () => {
-  test('CA1: tras confirmar y empezar otra compra, el formulario aparece vacío', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 3 · CAZABUGS.
-    // Compren algo, presionen "Volver a la tienda", agreguen otro producto, "Ir a pagar" y comprueben que los tres
-    // campos están vacíos:  await expect(campo).toHaveValue('')
+  test('CA-01: tras confirmar y empezar otra compra, el formulario aparece vacío', async ({ page }) => {
+    test.fail(true, 'PRJ-XX · los datos del cliente quedan guardados y reaparecen en la compra siguiente');
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.comprar('Esfero azul');
+    await tienda.volverALaTienda();
+    await tienda.agregar('Cuaderno universitario');
+    await tienda.irAPagar();
+
+    await expect(tienda.campo('Nombre completo')).toHaveValue('');
+    await expect(tienda.campo('Correo electrónico')).toHaveValue('');
+    await expect(tienda.campo('Dirección de entrega')).toHaveValue('');
   });
 });
 
 test.describe('US-17 · Confirmar mi pedido', () => {
-  test('CA1: con datos válidos veo "¡Pedido confirmado!" y un número de pedido', async ({ page }) => {
+  test('CA-01: con datos válidos veo "¡Pedido confirmado!" y un número de pedido', async ({ page }) => {
     test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 1. Compren un producto con datos válidos. Comprueben el encabezado "¡Pedido confirmado!" y que el texto
-    // "Número de pedido: #..." contiene un número (expresión regular /#\d+/).
   });
 
-  test('CA2: un segundo pedido (sin recargar) tiene otro número', async ({ page }) => {
+  test('CA-02: un segundo pedido (sin recargar) tiene otro número', async ({ page }) => {
     test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 2. Hagan dos compras seguidas ("Volver a la tienda" entre ambas), lean el número de cada una
-    // (guárdenlo en una variable con innerText()) y comprueben que son distintos: expect(segundo).not.toBe(primero)
   });
 
-  test('CA3: un pedido hecho después de recargar la página no repite un número anterior', async ({ page }) => {
-    test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 3 · CAZABUGS.
-    // Igual que la anterior, pero entre las dos compras recarguen la página con  await page.reload().
-    // Predicción antes de ejecutar: ¿pasará o fallará? Anótenla y compárenla con el resultado.
+  test('CA-03: un pedido hecho después de recargar la página no repite un número anterior', async ({ page }) => {
+    test.fail(true, 'PRJ-XX · el consecutivo de pedidos se reinicia al recargar y se repite el número (RF-10: debe ser único)');
+    const tienda = new TiendaPage(page);
+    await tienda.abrir();
+    await tienda.comprar('Esfero azul');
+    const primero = await tienda.numeroDePedido();
+
+    await page.reload();
+    await tienda.comprar('Esfero azul');
+    const segundo = await tienda.numeroDePedido();
+
+    expect(segundo).not.toBe(primero);
   });
 });
 
 test.describe('US-19 · Empezar una compra nueva con el carrito limpio', () => {
-  test('CA1: tras confirmar, el carrito está vacío y el contador marca 0', async ({ page }) => {
+  test('CA-01: tras confirmar, el carrito está vacío y el contador marca 0', async ({ page }) => {
     test.fixme(true, 'Pendiente de automatizar');
-    // Nivel 1. Compren, "Volver a la tienda" y comprueben "Tu carrito está vacío." y "0 artículo(s)" en el encabezado
-    // (page.getByRole('banner') es el encabezado de la página).
   });
 });
