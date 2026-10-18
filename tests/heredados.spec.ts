@@ -22,7 +22,7 @@ test('H1 · el catálogo tiene 8 productos (cumple RF-01: al menos 6)', async ({
 //      (130.000 − 26.000) × 19% = $ 19.760. La tienda muestra $ 24.700 (19% del subtotal sin descontar).
 //      Se deja SIN cambios y como fallo esperado, con la clave de Jira (es el mismo bug que US-11 CA-02 y US-12 CA-02).
 test('H2 · el IVA de 2 mochilas con DESC20 es $ 19.760', async ({ page }) => {
-  test.fail(true, 'PRJ-XX · el IVA se calcula sobre el subtotal completo, no sobre el valor descontado (RF-07)');
+  test.fail(true, 'TDT-106 · El IVA se calcula sobre el subtotal completo y no sobre el valor descontado (RF-07)');
   await page.goto('/');
   const tarjeta = page
     .locator('.rounded-lg')

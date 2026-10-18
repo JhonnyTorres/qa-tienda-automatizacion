@@ -25,14 +25,16 @@ test.describe('US-09 · Aplicar un código de descuento', () => {
   });
 
   const VARIANTES = [
-    { codigo: 'desc10', bug: 'PRJ-XX' },
-    { codigo: 'Desc10', bug: 'PRJ-XX' },
+    { codigo: 'desc10', bug: 'TDT-103' },
+    { codigo: 'Desc10', bug: 'TDT-103' },
     { codigo: ' DESC10 ', bug: '' },
   ];
 
   for (const { codigo, bug } of VARIANTES) {
     test(`CA-03: el código "${codigo}" se reconoce igual que DESC10`, async ({ page }) => {
-      test.fail(bug !== '', `${bug} · el código de descuento distingue mayúsculas de minúsculas`);
+      if (bug !== '') {
+        test.fail(true, `${bug} · el código de descuento no tolera variaciones de mayúsculas y minúsculas`);
+      }
       const tienda = new TiendaPage(page);
       await tienda.abrir();
       await tienda.agregar('Mochila escolar');
@@ -58,7 +60,7 @@ test.describe('US-10 · Recibir aviso si el código no es válido', () => {
   });
 
   test('CA-02: un código inválido NO borra un descuento válido ya aplicado', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · un código inválido borra el descuento válido ya aplicado');
+    test.fail(true, 'TDT-104 · Un código inválido elimina el descuento válido previamente aplicado');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar');
@@ -74,7 +76,7 @@ test.describe('US-10 · Recibir aviso si el código no es válido', () => {
 
 test.describe('US-11 · Ver el IVA correcto', () => {
   test('CA-02: con descuento, el IVA se calcula sobre el valor descontado', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · el IVA se calcula sobre el subtotal completo, no sobre el valor ya descontado (RF-07)');
+    test.fail(true, 'TDT-106 · Cálculo de IVA con descuento aplicado');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar');
@@ -87,7 +89,7 @@ test.describe('US-11 · Ver el IVA correcto', () => {
 
 test.describe('US-12 · Ver el total a pagar correcto', () => {
   test('CA-02: con descuento, el total es subtotal − descuento + IVA (IVA sobre lo descontado)', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · el total arrastra el IVA mal calculado (RF-07/RF-08); misma causa que US-11 CA-02');
+    test.fail(true, 'TDT-107 · Total general con descuento aplicado');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar');

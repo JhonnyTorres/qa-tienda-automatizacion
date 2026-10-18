@@ -12,7 +12,7 @@ import { TiendaPage } from '../pages/TiendaPage';
 
 test.describe('US-16 · Que mis datos no queden a la vista de otra persona', () => {
   test('CA-01: tras confirmar y empezar otra compra, el formulario aparece vacío', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · los datos del cliente quedan guardados y reaparecen en la compra siguiente');
+    test.fail(true, 'TDT-113 · los datos del cliente no se borran y reaparecen en la compra siguiente');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.comprar('Esfero azul');
@@ -51,7 +51,7 @@ test.describe('US-17 · Confirmar mi pedido', () => {
   });
 
   test('CA-03: un pedido hecho después de recargar la página no repite un número anterior', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · el consecutivo de pedidos se reinicia al recargar y se repite el número (RF-10: debe ser único)');
+    test.fail(true, 'TDT-116 · el consecutivo de pedidos se reinicia al recargar y se repite el número (RF-10: debe ser único)');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.comprar('Esfero azul');

@@ -24,7 +24,7 @@ const CORREOS_MAL_FORMADOS = ['ana.gmail.com', 'ana@', '@gmail.com', 'ana gomez@
 
 test.describe('US-13 · Ir a pagar desde el carrito', () => {
   test('CA-03: con total cero o negativo no se puede ir a pagar', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · "Ir a pagar" solo mira si hay líneas en el carrito, no si el total es mayor que cero');
+    test.fail(true, 'TDT-115 · El botón Ir a pagar permanece habilitado con total cero');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar', 1);
@@ -32,6 +32,7 @@ test.describe('US-13 · Ir a pagar desde el carrito', () => {
 
     await expect(tienda.botonPagar).toBeDisabled();
   });
+
 });
 
 test.describe('US-14 · Completar mis datos de envío', () => {
@@ -79,7 +80,7 @@ test.describe('US-15 · Ingresar un correo electrónico válido', () => {
   for (const correo of CORREOS_VALIDOS) {
     test(`CA-01 a CA-03: se acepta el correo válido ${correo}`, async ({ page }) => {
       // Solo las filas que fallan quedan como "fallo esperado"; las demás deben pasar de verdad.
-      test.fail(FALLAN_HOY.has(correo), 'PRJ-XX · el formato de correo rechaza correos válidos (puntos, guiones, "+" o subdominios)');
+      test.fail(FALLAN_HOY.has(correo), 'TDT-111 · el formato de correo rechaza correos válidos (puntos, guiones, "+" o subdominios)');
       const tienda = new TiendaPage(page);
       await tienda.abrir();
       await tienda.agregar('Esfero azul');

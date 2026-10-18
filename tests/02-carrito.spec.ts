@@ -53,7 +53,7 @@ test.describe('US-04 · Agregar productos sin superar el stock', () => {
   });
 
   test('CA-03: 4 + 4 mochilas supera el stock (6) y debe rechazarse', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · el stock solo se valida por cada clic, no contra lo que ya hay en el carrito');
+    test.fail(true, 'TDT-97 · Exceder el stock al sumar unidades que ya están en el carrito');
     // Este test se deja con localizadores directos (sin Page Object) para poder comparar "antes" y "después".
     await page.goto('/');
     // La tienda avisa con un alert(): se registra el manejador ANTES de la acción que lo provoca.
@@ -96,7 +96,7 @@ test.describe('US-04 · Agregar productos sin superar el stock', () => {
 
 test.describe('US-05 · Aumentar la cantidad desde el carrito', () => {
   test('CA-02: "+" no pasa del stock (6 mochilas)', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · el botón "+" del carrito no valida el stock');
+    test.fail(true, 'TDT-98 · El botón de incrementar permite superar el stock disponible');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar', 6); // todo el stock
@@ -110,7 +110,7 @@ test.describe('US-05 · Aumentar la cantidad desde el carrito', () => {
 
 test.describe('US-06 · Disminuir la cantidad desde el carrito', () => {
   test('CA-02 (elegimos: se queda en 1): con cantidad 1, "−" no la deja en 0 ni en negativo', async ({ page }) => {
-    test.fail(true, 'PRJ-XX · el botón "−" baja la cantidad a 0 (y más) en vez de respetar el mínimo de 1');
+    test.fail(true, 'TDT-99 · Disminuir la cantidad mínima permite llegar a cero');
     const tienda = new TiendaPage(page);
     await tienda.abrir();
     await tienda.agregar('Mochila escolar', 1);
